@@ -34,7 +34,7 @@ public class MainActivity extends Activity {
             }
         });
         setContentView(webView);
-        webView.loadUrl("https://rasulov998.github.io/vibe/");
+        webView.loadUrl("https://rasulov998.github.io/vibe/?v=1.0.6");
     }
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == FILE_CHOOSER) {
