@@ -1,1 +1,57 @@
-<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>VIBE Telegram Manager</title><style>body{margin:0;background:#090b12;color:#fff;font-family:Arial,sans-serif;display:grid;place-items:center;min-height:100vh}.card{width:min(460px,calc(100% - 32px));background:#111522;border:1px solid #272d40;border-radius:22px;padding:24px;box-sizing:border-box;box-shadow:0 20px 70px #0008}h1{margin:0 0 8px}.muted{color:#9ca3b5}.row{margin:18px 0}.label{display:block;margin-bottom:8px}input{width:100%;box-sizing:border-box;padding:14px;border-radius:12px;border:1px solid #30374d;background:#0a0d15;color:#fff;font-size:15px}button{width:100%;padding:14px;border:0;border-radius:12px;background:#fff;color:#111;font-weight:700;font-size:15px;margin-top:10px}.status{margin-top:16px;padding:12px;border-radius:12px;background:#0b0f19;color:#cbd5e1}.warning{font-size:13px;color:#fbbf24;line-height:1.45}.brand{font-weight:800;letter-spacing:.5px;margin-bottom:18px}</style></head><body><main class="card"><div class="brand">VIBE • TELEGRAM MANAGER</div><h1>Подключение бота</h1><p class="muted">@VibeMedia_TJBot</p><div class="row"><label class="label" for="token">Bot Token</label><input id="token" type="password" autocomplete="off" placeholder="Вставьте Token от @BotFather"></div><button id="test">🧪 Проверить бота</button><button id="save">💾 Сохранить подключение</button><div id="status" class="status">⚪ Бот ещё не проверен</div><p class="warning">🔒 Token не хранится в URL. Для реального безопасного сохранения подключите backend/Secret.</p></main><script>const $=id=>document.getElementById(id);async function test(){const t=$('token').value.trim();if(!t)return $('status').textContent='🔴 Сначала вставьте Token';$('status').textContent='⏳ Проверяем…';try{const r=await fetch('https://api.telegram.org/bot'+encodeURIComponent(t)+'/getMe');const j=await r.json();$('status').textContent=j.ok?'🟢 Бот подключён: @'+j.result.username:'🔴 Token недействителен';}catch(e){$('status').textContent='🔴 Не удалось проверить Token';}}$('test').onclick=test;$('save').onclick=()=>{if(!$('token').value.trim())return $('status').textContent='🔴 Введите Token';$('status').textContent='🟡 Проверка прошла. Безопасное сохранение требует backend Secret.';};</script></body></html>
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VIBE Telegram Manager</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0"></script>
+<script src="supabase-client.js?v=4"></script>
+<style>
+body{margin:0;background:#090b12;color:#fff;font-family:Arial,sans-serif;display:grid;place-items:center;min-height:100vh}.card{width:min(520px,calc(100% - 28px));background:#111522;border:1px solid #272d40;border-radius:22px;padding:24px;box-sizing:border-box;box-shadow:0 20px 70px #0008}h1{margin:0 0 8px}.muted{color:#9ca3b5}.row{margin:16px 0}.label{display:block;margin-bottom:8px}input,textarea{width:100%;box-sizing:border-box;padding:13px;border-radius:12px;border:1px solid #30374d;background:#0a0d15;color:#fff;font-size:15px}textarea{min-height:110px;resize:vertical}button{width:100%;padding:13px;border:0;border-radius:12px;background:#fff;color:#111;font-weight:700;font-size:15px;margin-top:9px;cursor:pointer}.secondary{background:#252b3d;color:#fff}.danger{background:#3a1820;color:#fff}.status{margin-top:16px;padding:12px;border-radius:12px;background:#0b0f19;color:#cbd5e1;line-height:1.45}.hidden{display:none}.brand{font-weight:800;letter-spacing:.5px;margin-bottom:18px}.section{border-top:1px solid #272d40;margin-top:22px;padding-top:18px}.small{font-size:12px;color:#9ca3b5;line-height:1.45}.ok{color:#86efac}.warn{color:#fbbf24}.err{color:#fca5a5}
+</style>
+</head>
+<body>
+<main class="card">
+<div class="brand">VIBE • TELEGRAM MANAGER</div>
+<h1>Управление Telegram</h1>
+<p class="muted">@VibeMedia_TJBot</p>
+
+<section id="loginBox">
+<div class="row"><label class="label">Email VIBE</label><input id="email" type="email" autocomplete="username" placeholder="email@example.com"></div>
+<div class="row"><label class="label">Пароль VIBE</label><input id="password" type="password" autocomplete="current-password" placeholder="Пароль"></div>
+<button id="login">🔐 Войти в Manager</button>
+</section>
+
+<section id="managerBox" class="hidden">
+<div class="status" id="botStatus">⏳ Проверяем подключение бота…</div>
+<div class="row"><label class="label">Канал / чат ID</label><input id="chatId" placeholder="@mychannel или -1001234567890"></div>
+<div class="row"><label class="label">Текст поста</label><textarea id="text" placeholder="Напиши текст публикации…"></textarea></div>
+<div class="row"><label class="label">Ссылка на фото (необязательно)</label><input id="photo" type="url" placeholder="https://.../image.jpg"></div>
+<div class="row"><label class="label">Ссылка на видео (необязательно)</label><input id="video" type="url" placeholder="https://.../video.mp4"></div>
+<button id="send">📤 Опубликовать</button>
+<button id="logout" class="secondary">Выйти</button>
+<div id="status" class="status">⚪ Готов</div>
+<p class="small">🔒 Bot Token не хранится в этом HTML и не отправляется в браузер. Он должен находиться в Secret Supabase Edge Function.</p>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const FUNCTION_URL=window.VIBE_SUPABASE_URL+'/functions/v1/telegram-manager';
+async function session(){return (await window.vibeSupabase.auth.getSession()).data.session;}
+function setStatus(t,c=''){ $('status').textContent=t; $('status').className='status '+c; }
+async function callTelegram(method,params={}){
+ const s=await session(); if(!s) throw new Error('Сначала войдите в Manager');
+ const r=await fetch(FUNCTION_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+s.access_token},body:JSON.stringify({method,params})});
+ const j=await r.json(); if(!r.ok||!j.ok) throw new Error(j.description||j.error||'Ошибка Telegram'); return j;
+}
+async function openManager(){
+ $('loginBox').classList.add('hidden'); $('managerBox').classList.remove('hidden');
+ try{const j=await callTelegram('getMe');$('botStatus').innerHTML='🟢 Бот подключён: @'+(j.result?.username||'unknown');$('botStatus').className='status ok';}
+ catch(e){$('botStatus').innerHTML='🔴 '+e.message;$('botStatus').className='status err';}
+}
+$('login').onclick=async()=>{const email=$('email').value.trim(),password=$('password').value;if(!email||!password)return setStatus('🔴 Введите email и пароль','err');$('login').disabled=true;setStatus('⏳ Входим…');try{const {error}=await window.vibeSupabase.auth.signInWithPassword({email,password});if(error)throw error;await openManager();}catch(e){setStatus('🔴 '+(e.message||'Не удалось войти'),'err')}finally{$('login').disabled=false}};
+$('send').onclick=async()=>{const chat_id=$('chatId').value.trim(),text=$('text').value.trim(),photo=$('photo').value.trim(),video=$('video').value.trim();if(!chat_id)return setStatus('🔴 Укажите канал/чат ID','err');if(!text&&!photo&&!video)return setStatus('🔴 Добавьте текст, фото или видео','err');$('send').disabled=true;setStatus('⏳ Публикуем…');try{let j;if(video)j=await callTelegram('sendVideo',{chat_id,video,caption:text});else if(photo)j=await callTelegram('sendPhoto',{chat_id,photo,caption:text});else j=await callTelegram('sendMessage',{chat_id,text});setStatus('🟢 Опубликовано успешно. Message ID: '+(j.result?.message_id||'?'),'ok');}catch(e){setStatus('🔴 '+e.message,'err')}finally{$('send').disabled=false}};
+$('logout').onclick=async()=>{await window.vibeSupabase.auth.signOut();$('managerBox').classList.add('hidden');$('loginBox').classList.remove('hidden');setStatus('⚪ Вы вышли');};
+(async()=>{const s=await session();if(s)openManager();})();
+</script>
+</body>
+</html>
