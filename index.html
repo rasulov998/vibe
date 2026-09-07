@@ -77,7 +77,23 @@
       <button class="active" data-tab="home">⌂<small>Главная</small></button><button data-tab="explore">◈<small>Интересное</small></button><button class="create" data-tab="create">＋</button><button data-tab="inbox">♡<small>Входящие</small><i>3</i></button><button data-tab="profile">♙<small>Профиль</small></button>
     </nav>
   </div>
-  <div class="auth-modal" id="authModal" aria-hidden="true"><div class="auth-backdrop" data-close-auth></div><section class="auth-card" role="dialog" aria-modal="true"><button class="auth-close" data-close-auth>×</button><div class="auth-logo"><span>V</span>IBE <b>2.0</b></div><h2 id="authTitle">Добро пожаловать в VIBE</h2><p class="auth-subtitle">Войди или создай аккаунт, чтобы продолжить.</p><div class="auth-tabs"><button class="auth-tab active" data-auth-tab="login">Войти</button><button class="auth-tab" data-auth-tab="register">Регистрация</button></div><form id="authForm"><label class="auth-field register-only hidden">Имя пользователя<input id="authUsername" autocomplete="username" placeholder="rasulov998"></label><label class="auth-field">Email<input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" required></label><label class="auth-field">Пароль<input id="authPassword" type="password" autocomplete="current-password" placeholder="Минимум 6 символов" minlength="6" required></label><button class="auth-submit" type="submit" id="authSubmit">Войти</button></form><p class="auth-note">Демо-авторизация: данные сохраняются только в этом браузере.</p></section></div>
+
+  <div class="auth-modal" id="authModal" aria-hidden="true">
+    <div class="auth-backdrop" data-close-auth></div>
+    <section class="auth-card" role="dialog" aria-modal="true">
+      <button class="auth-close" data-close-auth>×</button>
+      <div class="auth-logo"><span>V</span>IBE <b>2.0</b></div>
+      <h2 id="authTitle">Войти в VIBE</h2>
+      <p class="auth-subtitle">Войди в свой аккаунт, чтобы продолжить.</p>
+      <form id="authForm">
+        <label class="auth-field">Email<input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" required></label>
+        <label class="auth-field">Пароль<input id="authPassword" type="password" autocomplete="current-password" placeholder="Минимум 6 символов" minlength="6" required></label>
+        <button class="auth-submit" type="submit" id="authSubmit">Войти</button>
+      </form>
+      <p class="auth-register-text">Нет аккаунта? <a href="register.html">Зарегистрироваться</a></p>
+      <p class="auth-note">Демо-авторизация: данные сохраняются только в этом браузере.</p>
+    </section>
+  </div>
   <div class="toast" id="toast"></div>
   <script src="app.js"></script>
 </body>
