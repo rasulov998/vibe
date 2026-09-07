@@ -1,10 +1,74 @@
-const toast=document.getElementById('toast');const searchInput=document.getElementById('searchInput');function showToast(msg){toast.textContent=msg;toast.classList.add('show');clearTimeout(window.t);window.t=setTimeout(()=>toast.classList.remove('show'),1800)}document.querySelectorAll('[data-like]').forEach(btn=>btn.addEventListener('click',()=>{btn.textContent=btn.textContent==='♡'?'♥':'♡';showToast(btn.textContent==='♥'?'Лайк поставлен ❤️':'Лайк убран')}));document.querySelectorAll('.nav-item,.bottom-nav button').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.nav-item,.bottom-nav button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('[data-tab="'+btn.dataset.tab+'"]').forEach(x=>x.classList.add('active'));if(btn.dataset.tab!=='home')showToast(btn.dataset.tab==='create'?'Открываем создание видео…':btn.dataset.tab==='profile'?'Открываем профиль…':'Раздел VIBE скоро будет здесь')}));document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));tab.classList.add('active');showToast('Лента: '+tab.textContent)}));searchInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&searchInput.value.trim())showToast('Поиск: '+searchInput.value.trim())});document.getElementById('searchBox').addEventListener('click',()=>searchInput.focus());document.getElementById('themeBtn').addEventListener('click',()=>showToast('VIBE 2.0 сейчас в тёмной теме'));
-const authModal=document.getElementById('authModal'),authForm=document.getElementById('authForm'),authTitle=document.getElementById('authTitle'),authSubmit=document.getElementById('authSubmit'),registerField=document.querySelector('.register-only'),usernameInput=document.getElementById('authUsername'),emailInput=document.getElementById('authEmail'),passwordInput=document.getElementById('authPassword');
-let authMode='login';
-function openAuth(mode){authMode=mode||'login';authModal.classList.add('open');authModal.setAttribute('aria-hidden','false');document.querySelectorAll('.auth-tab').forEach(t=>t.classList.toggle('active',t.dataset.authTab===authMode));registerField.classList.toggle('hidden',authMode!=='register');usernameInput.required=authMode==='register';authTitle.textContent=authMode==='register'?'Создать аккаунт':'Войти в VIBE';authSubmit.textContent=authMode==='register'?'Зарегистрироваться':'Войти';setTimeout(()=>emailInput.focus(),50)}
-function closeAuth(){authModal.classList.remove('open');authModal.setAttribute('aria-hidden','true');authForm.reset()}
-document.querySelector('.avatar')?.addEventListener('click',()=>openAuth('register'));
+const toast=document.getElementById('toast');
+const searchInput=document.getElementById('searchInput');
+function showToast(msg){if(!toast)return;toast.textContent=msg;toast.classList.add('show');clearTimeout(window.t);window.t=setTimeout(()=>toast.classList.remove('show'),1800)}
+
+document.querySelectorAll('[data-like]').forEach(btn=>btn.addEventListener('click',()=>{
+  btn.textContent=btn.textContent==='♡'?'♥':'♡';
+  showToast(btn.textContent==='♥'?'Лайк поставлен ❤️':'Лайк убран');
+}));
+
+document.querySelectorAll('.nav-item,.bottom-nav button').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('.nav-item,.bottom-nav button').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('[data-tab="'+btn.dataset.tab+'"]').forEach(x=>x.classList.add('active'));
+  if(btn.dataset.tab!=='home'){
+    if(btn.dataset.tab==='profile') openAuth();
+    else showToast(btn.dataset.tab==='create'?'Открываем создание видео…':'Раздел VIBE скоро будет здесь');
+  }
+}));
+
+document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  tab.classList.add('active');
+  showToast('Лента: '+tab.textContent);
+}));
+
+searchInput?.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&searchInput.value.trim())showToast('Поиск: '+searchInput.value.trim());
+});
+document.getElementById('searchBox')?.addEventListener('click',()=>searchInput?.focus());
+document.getElementById('themeBtn')?.addEventListener('click',()=>showToast('VIBE 2.0 сейчас в тёмной теме'));
+
+const authModal=document.getElementById('authModal');
+const authForm=document.getElementById('authForm');
+const emailInput=document.getElementById('authEmail');
+const passwordInput=document.getElementById('authPassword');
+
+function openAuth(){
+  if(!authModal)return;
+  authModal.classList.add('open');
+  authModal.setAttribute('aria-hidden','false');
+  setTimeout(()=>emailInput?.focus(),50);
+}
+function closeAuth(){
+  if(!authModal)return;
+  authModal.classList.remove('open');
+  authModal.setAttribute('aria-hidden','true');
+  authForm?.reset();
+}
+
+document.querySelector('.avatar')?.addEventListener('click',openAuth);
 document.querySelectorAll('[data-close-auth]').forEach(x=>x.addEventListener('click',closeAuth));
-document.querySelectorAll('.auth-tab').forEach(x=>x.addEventListener('click',()=>openAuth(x.dataset.authTab)));
-document.querySelectorAll('[data-tab="profile"]').forEach(x=>x.addEventListener('click',()=>openAuth(localStorage.getItem('vibeUser')?'login':'register')));
-authForm.addEventListener('submit',e=>{e.preventDefault();const email=emailInput.value.trim().toLowerCase(),password=passwordInput.value,username=usernameInput.value.trim();if(!email||!emailInput.checkValidity())return showToast('Введи правильный Email');if(password.length<6)return showToast('Пароль должен быть не менее 6 символов');if(authMode==='register'){if(username.length<3)return showToast('Имя пользователя: минимум 3 символа');localStorage.setItem('vibeUser',JSON.stringify({username,email,password}));document.querySelector('.avatar').textContent=username.charAt(0).toUpperCase();showToast('Регистрация успешна 🎉');closeAuth()}else{const saved=JSON.parse(localStorage.getItem('vibeUser')||'null');if(!saved||saved.email!==email||saved.password!==password)return showToast('Неверный Email или пароль');document.querySelector('.avatar').textContent=(saved.username||'R').charAt(0).toUpperCase();showToast('Вход выполнен 👋');closeAuth()}});
+
+authForm?.addEventListener('submit',e=>{
+  e.preventDefault();
+  const email=emailInput.value.trim().toLowerCase();
+  const password=passwordInput.value;
+  if(!email||!emailInput.checkValidity())return showToast('Введи правильный Email');
+  if(password.length<6)return showToast('Пароль должен быть не менее 6 символов');
+  const saved=JSON.parse(localStorage.getItem('vibeUser')||'null');
+  if(!saved||saved.email!==email||saved.password!==password)return showToast('Неверный Email или пароль');
+  const avatar=document.querySelector('.avatar');
+  if(avatar)avatar.textContent=(saved.username||'R').charAt(0).toUpperCase();
+  showToast('Вход выполнен 👋');
+  closeAuth();
+});
+
+const params=new URLSearchParams(location.search);
+if(params.get('login')==='1')setTimeout(openAuth,150);
+if(params.get('registered')==='1')setTimeout(()=>showToast('Регистрация успешна 🎉 Теперь войди в аккаунт.'),250);
+
+const savedUser=JSON.parse(localStorage.getItem('vibeUser')||'null');
+if(savedUser){
+  const avatar=document.querySelector('.avatar');
+  if(avatar)avatar.textContent=(savedUser.username||'R').charAt(0).toUpperCase();
+}
