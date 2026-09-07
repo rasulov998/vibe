@@ -26,3 +26,5 @@ jobs:
         with:
           name: VIBE-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
+
+# Trigger a fresh APK build for the current VIBE web release.
