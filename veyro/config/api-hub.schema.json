@@ -1,0 +1,14 @@
+{
+  "name": "VEYRO API Hub",
+  "version": 1,
+  "purpose": "Provider registry used by the AI Orchestrator to select APIs for generated apps/games.",
+  "selection_rules": [
+    "Prefer HTTPS.",
+    "Never expose provider secrets in generated APK/AAB.",
+    "Route authenticated providers through the VEYRO backend.",
+    "Store provider terms, auth mode, quotas and last_verified_at.",
+    "Run a health check before allowing an integration into a build.",
+    "Mark uncertain commercial/licensing status as CONDITIONAL or HOLD."
+  ],
+  "providers": []
+}
