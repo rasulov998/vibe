@@ -1,0 +1,73 @@
+name: VEYRO Build Worker
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_path:
+        description: "Path to VEYRO project manifest directory"
+        required: true
+        default: "veyro"
+      format:
+        description: "Build format"
+        required: true
+        default: "apk"
+        type: choice
+        options:
+          - apk
+          - aab
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify VEYRO build inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "${{ inputs.project_path }}/backend/project-engine/example-manifest.json"
+          test -f "${{ inputs.project_path }}/backend/build-engine/types.ts"
+          test -f "${{ inputs.project_path }}/backend/build-worker/job-contract.json"
+          echo "VEYRO build inputs found."
+
+  android-build:
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Verify toolchain
+        run: |
+          flutter --version
+          java -version
+          gradle --version || true
+
+      - name: Build Worker status
+        run: |
+          echo "VEYRO Build Worker runtime is ready."
+          echo "Requested format: ${{ inputs.format }}"
+          echo "Next stage: generate the Android project from ProjectManifest."
+
+      # Intentionally no arbitrary generated shell commands are executed here.
+      # The Android template/generator is added as a controlled build input.
