@@ -26,6 +26,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: veyro-v1
 
       - name: Verify VEYRO build inputs
         shell: bash
@@ -34,6 +36,9 @@ jobs:
           test -f "${{ inputs.project_path }}/backend/project-engine/example-manifest.json"
           test -f "${{ inputs.project_path }}/backend/build-engine/types.ts"
           test -f "${{ inputs.project_path }}/backend/build-worker/job-contract.json"
+          test -f "${{ inputs.project_path }}/templates/flutter_app/pubspec.yaml"
+          test -f "${{ inputs.project_path }}/templates/flutter_app/lib/main.dart"
+          test -f "${{ inputs.project_path }}/templates/flutter_app/test/widget_test.dart"
           echo "VEYRO build inputs found."
 
   android-build:
@@ -43,6 +48,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: veyro-v1
 
       - name: Set up JDK
         uses: actions/setup-java@v4
@@ -59,15 +66,59 @@ jobs:
 
       - name: Verify toolchain
         run: |
+          set -euo pipefail
           flutter --version
           java -version
-          gradle --version || true
 
-      - name: Build Worker status
+      - name: Materialize controlled Flutter project
+        shell: bash
         run: |
-          echo "VEYRO Build Worker runtime is ready."
-          echo "Requested format: ${{ inputs.format }}"
-          echo "Next stage: generate the Android project from ProjectManifest."
+          set -euo pipefail
+          rm -rf build/veyro_flutter
+          mkdir -p build/veyro_flutter
+          flutter create --platforms=android --project-name veyro_generated_app build/veyro_flutter
+          cp "${{ inputs.project_path }}/templates/flutter_app/pubspec.yaml" build/veyro_flutter/pubspec.yaml
+          cp "${{ inputs.project_path }}/templates/flutter_app/lib/main.dart" build/veyro_flutter/lib/main.dart
+          cp "${{ inputs.project_path }}/templates/flutter_app/test/widget_test.dart" build/veyro_flutter/test/widget_test.dart
+          cp "${{ inputs.project_path }}/templates/flutter_app/README.md" build/veyro_flutter/README.md
 
-      # Intentionally no arbitrary generated shell commands are executed here.
-      # The Android template/generator is added as a controlled build input.
+      - name: Resolve dependencies
+        working-directory: build/veyro_flutter
+        run: flutter pub get
+
+      - name: Run Flutter tests
+        working-directory: build/veyro_flutter
+        run: flutter test
+
+      - name: Build Android artifact
+        working-directory: build/veyro_flutter
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ inputs.format }}" = "aab" ]; then
+            flutter build appbundle --debug
+          else
+            flutter build apk --debug
+          fi
+
+      - name: Verify artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ inputs.format }}" = "aab" ]; then
+            test -f build/veyro_flutter/build/app/outputs/bundle/debug/app-debug.aab
+            echo "AAB created successfully."
+          else
+            test -f build/veyro_flutter/build/app/outputs/flutter-apk/app-debug.apk
+            echo "APK created successfully."
+          fi
+
+      - name: Upload VEYRO artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: veyro-${{ inputs.format }}-debug
+          path: |
+            build/veyro_flutter/build/app/outputs/flutter-apk/app-debug.apk
+            build/veyro_flutter/build/app/outputs/bundle/debug/app-debug.aab
+          if-no-files-found: error
+          retention-days: 7
