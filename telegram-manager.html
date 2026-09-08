@@ -18,7 +18,7 @@ body{margin:0;background:#090b12;color:#fff;font-family:Arial,sans-serif;display
 <section id="loginBox">
 <div class="row"><label class="label">Email VIBE</label><input id="email" type="email" autocomplete="username" placeholder="email@example.com"></div>
 <div class="row"><label class="label">Пароль VIBE</label><input id="password" type="password" autocomplete="current-password" placeholder="Пароль"></div>
-<button id="login">🔐 Войти в Manager</button>
+<button id="login">🔐 Войти в Manager</button><button id="register" class="secondary">🆕 Создать аккаунт Manager</button>
 </section>
 
 <section id="managerBox" class="hidden">
@@ -43,12 +43,12 @@ async function callTelegram(method,params={}){
  const r=await fetch(FUNCTION_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+s.access_token},body:JSON.stringify({method,params})});
  const j=await r.json(); if(!r.ok||!j.ok) throw new Error(j.description||j.error||'Ошибка Telegram'); return j;
 }
-async function openManager(){
+async function register(){const email=$('email').value.trim(),password=$('password').value;if(!email||!password)return setStatus('🔴 Введите email и пароль для регистрации','err');if(password.length<6)return setStatus('🔴 Пароль должен быть минимум 6 символов','err');$('register').disabled=true;setStatus('⏳ Создаём аккаунт…');try{const {data,error}=await window.vibeSupabase.auth.signUp({email,password});if(error)throw error;if(data.session){await openManager();}else{setStatus('🟡 Аккаунт создан. Если Supabase требует подтверждение email, подтвердите его и затем войдите.','warn');}}catch(e){setStatus('🔴 '+(e.message||'Не удалось создать аккаунт'),'err')}finally{$('register').disabled=false}}\nasync function openManager(){
  $('loginBox').classList.add('hidden'); $('managerBox').classList.remove('hidden');
  try{const j=await callTelegram('getMe');$('botStatus').innerHTML='🟢 Бот подключён: @'+(j.result?.username||'unknown');$('botStatus').className='status ok';}
  catch(e){$('botStatus').innerHTML='🔴 '+e.message;$('botStatus').className='status err';}
 }
-$('login').onclick=async()=>{const email=$('email').value.trim(),password=$('password').value;if(!email||!password)return setStatus('🔴 Введите email и пароль','err');$('login').disabled=true;setStatus('⏳ Входим…');try{const {error}=await window.vibeSupabase.auth.signInWithPassword({email,password});if(error)throw error;await openManager();}catch(e){setStatus('🔴 '+(e.message||'Не удалось войти'),'err')}finally{$('login').disabled=false}};
+$('register').onclick=register;\n$('login').onclick=async()=>{const email=$('email').value.trim(),password=$('password').value;if(!email||!password)return setStatus('🔴 Введите email и пароль','err');$('login').disabled=true;setStatus('⏳ Входим…');try{const {error}=await window.vibeSupabase.auth.signInWithPassword({email,password});if(error)throw error;await openManager();}catch(e){setStatus('🔴 '+(e.message||'Не удалось войти'),'err')}finally{$('login').disabled=false}};
 $('send').onclick=async()=>{const chat_id=$('chatId').value.trim(),text=$('text').value.trim(),photo=$('photo').value.trim(),video=$('video').value.trim();if(!chat_id)return setStatus('🔴 Укажите канал/чат ID','err');if(!text&&!photo&&!video)return setStatus('🔴 Добавьте текст, фото или видео','err');$('send').disabled=true;setStatus('⏳ Публикуем…');try{let j;if(video)j=await callTelegram('sendVideo',{chat_id,video,caption:text});else if(photo)j=await callTelegram('sendPhoto',{chat_id,photo,caption:text});else j=await callTelegram('sendMessage',{chat_id,text});setStatus('🟢 Опубликовано успешно. Message ID: '+(j.result?.message_id||'?'),'ok');}catch(e){setStatus('🔴 '+e.message,'err')}finally{$('send').disabled=false}};
 $('logout').onclick=async()=>{await window.vibeSupabase.auth.signOut();$('managerBox').classList.add('hidden');$('loginBox').classList.remove('hidden');setStatus('⚪ Вы вышли');};
 (async()=>{const s=await session();if(s)openManager();})();
