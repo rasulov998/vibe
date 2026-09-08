@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "job": {
+    "id": "uuid",
+    "projectId": "stable-project-id",
+    "userId": "stable-user-id",
+    "format": "apk",
+    "attempt": 1
+  },
+  "limits": {
+    "maxDurationSeconds": 900,
+    "maxCpuSeconds": 600,
+    "maxMemoryMb": 2048,
+    "maxDiskMb": 4096,
+    "maxArtifactMb": 500
+  },
+  "network": {
+    "default": "deny",
+    "allowlist": [
+      "configured-package-repositories"
+    ]
+  },
+  "output": {
+    "artifactType": "apk",
+    "status": "completed"
+  }
+}
