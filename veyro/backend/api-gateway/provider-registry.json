@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "providers": [
+    {"id":"frankfurter","category":"currency","status":"approved","auth":"none","baseUrl":"https://api.frankfurter.app"},
+    {"id":"open-meteo","category":"weather","status":"conditional","auth":"none","baseUrl":"https://api.open-meteo.com"},
+    {"id":"nominatim","category":"geocoding","status":"conditional","auth":"none","baseUrl":"https://nominatim.openstreetmap.org"},
+    {"id":"rest-countries","category":"countries","status":"conditional","auth":"api_key","baseUrl":""},
+    {"id":"coingecko","category":"crypto","status":"conditional","auth":"api_key_or_plan","baseUrl":""},
+    {"id":"nasa","category":"science","status":"conditional","auth":"api_key","baseUrl":"https://api.nasa.gov"},
+    {"id":"open-library","category":"books","status":"conditional","auth":"none","baseUrl":"https://openlibrary.org"},
+    {"id":"gutendex","category":"books","status":"approved","auth":"none","baseUrl":"https://gutendex.com"},
+    {"id":"tvmaze","category":"tv","status":"conditional","auth":"none","baseUrl":"https://api.tvmaze.com"},
+    {"id":"jikan","category":"anime","status":"conditional","auth":"none","baseUrl":"https://api.jikan.moe"},
+    {"id":"pokeapi","category":"games","status":"conditional","auth":"none","baseUrl":"https://pokeapi.co"},
+    {"id":"themealdb","category":"food","status":"conditional","auth":"key_or_supporter","baseUrl":"https://www.themealdb.com"},
+    {"id":"open-food-facts","category":"food","status":"conditional","auth":"none","baseUrl":"https://world.openfoodfacts.org"},
+    {"id":"jsonplaceholder","category":"testing","status":"approved","auth":"none","baseUrl":"https://jsonplaceholder.typicode.com"},
+    {"id":"dummyjson","category":"testing","status":"approved","auth":"none","baseUrl":"https://dummyjson.com"},
+    {"id":"randomuser","category":"testing","status":"approved","auth":"none","baseUrl":"https://randomuser.me"},
+    {"id":"dog-api","category":"demo","status":"approved","auth":"none","baseUrl":"https://dog.ceo/api"},
+    {"id":"urlhaus","category":"security","status":"conditional","auth":"api_access","baseUrl":"https://urlhaus-api.abuse.ch"},
+    {"id":"dictionary","category":"education","status":"conditional","auth":"varies","baseUrl":""},
+    {"id":"news","category":"news","status":"hold","auth":"varies","baseUrl":""}
+  ]
+}
