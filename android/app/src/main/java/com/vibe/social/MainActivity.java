@@ -28,22 +28,34 @@ public class MainActivity extends Activity {
             @Override public boolean onShowFileChooser(WebView v, ValueCallback<Uri[]> cb, FileChooserParams p) {
                 if (fileCallback != null) fileCallback.onReceiveValue(null);
                 fileCallback = cb;
-                Intent i = p.createIntent();
-                try { startActivityForResult(i, FILE_CHOOSER); } catch (Exception e) { fileCallback = null; return false; }
+                try {
+                    Intent i = p.createIntent();
+                    startActivityForResult(i, FILE_CHOOSER);
+                } catch (Exception e) {
+                    if (fileCallback != null) fileCallback.onReceiveValue(null);
+                    fileCallback = null;
+                    return false;
+                }
                 return true;
             }
         });
         setContentView(webView);
-        webView.loadUrl("https://rasulov998.github.io/vibe/?v=1.0.6");
+        // Bump the URL version so WebView requests the current VIBE web app.
+        webView.loadUrl("https://rasulov998.github.io/vibe/?v=1.0.8");
     }
+
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == FILE_CHOOSER) {
-            if (fileCallback != null) fileCallback.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(resultCode, data));
+            if (fileCallback != null) {
+                fileCallback.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(resultCode, data));
+            }
             fileCallback = null;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
     @Override public void onBackPressed() {
-        if (webView.canGoBack()) webView.goBack(); else super.onBackPressed();
+        if (webView.canGoBack()) webView.goBack();
+        else super.onBackPressed();
     }
 }
