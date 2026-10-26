@@ -40,8 +40,8 @@ public class MainActivity extends Activity {
             }
         });
         setContentView(webView);
-        // Bump the URL version so WebView requests the current VIBE web app.
-        webView.loadUrl("https://rasulov998.github.io/vibe/?v=1.0.8");
+        // Match the Android release version and bypass stale WebView page cache.
+        webView.loadUrl("https://rasulov998.github.io/vibe/?v=1.0.9");
     }
 
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
